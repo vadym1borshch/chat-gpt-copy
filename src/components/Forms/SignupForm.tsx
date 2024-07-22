@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/store/store'
@@ -9,6 +9,7 @@ import {
   setCurrentUser,
 } from '@/store/slices/usersSlice/usersSlice'
 import { usersSelector } from '@/store/slices/usersSlice/selectors/selectors'
+import { USER } from '@/common/vars'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
@@ -38,7 +39,9 @@ export default function SignUp() {
       return
     }
     if (user) {
-      dispatch(setCurrentUser({ id: 1, email: email, name: email }))
+      const curUser = { id: 1, email: user.email, name: user.email }
+      dispatch(setCurrentUser(curUser))
+      localStorage.setItem(USER, JSON.stringify(curUser))
       return
     }
     if (!user) {

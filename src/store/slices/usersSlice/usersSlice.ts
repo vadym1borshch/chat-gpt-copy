@@ -38,6 +38,9 @@ const usersSlice = createSlice({
     setCurrentUser: (state: IInitialState, action: PayloadAction<ICurrentUser>) => {
       state.currentUser = action.payload
     },
+    deleteCurrentUser: (state: IInitialState) => {
+      state.currentUser = null
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -58,6 +61,6 @@ const usersSlice = createSlice({
   },
 })
 
-export const { setCurrentUser } = usersSlice.actions
+export const { setCurrentUser, deleteCurrentUser } = usersSlice.actions
 
 export default usersSlice.reducer
