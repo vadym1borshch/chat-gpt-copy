@@ -19,17 +19,17 @@ const Home = () => {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
   const { data: session, status } = useSession()
-
+  console.log(status)
   useEffect(() => {
     const storageUser = localStorage.getItem(USER)
     if (storageUser) {
       dispatch(setCurrentUser(JSON.parse(storageUser) as ICurrentUser))
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(fetchUsersFromDB())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (!!user) {
@@ -47,7 +47,7 @@ const Home = () => {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-8">
+    <div className="flex w-full flex-col items-center justify-center gap-8">
       <h1 className="text-[32px] font-bold italic text-center">To continue - sign in or sign up, please</h1>
       <SignUp />
       <SignIn />

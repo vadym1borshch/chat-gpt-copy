@@ -49,7 +49,7 @@ const SignIn = () => {
         )
       }
     }
-  }, [dispatch, router, session?.user, status])
+  }, [dispatch, router, session, status])
 
   return (
     <div className="flex flex-col gap-2">

@@ -1,11 +1,16 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  ],options: {
+    safelist: [
+      /^h-\[.*\]$/ // Регулярний вираз для збереження класів, що починаються на h-[ і закінчуються ]
+    ],
+  },
   theme: {
     extend: {
       backgroundImage: {
