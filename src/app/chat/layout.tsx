@@ -1,18 +1,20 @@
 'use client'
-import React, { ReactNode, useEffect, useMemo, useState } from 'react'
+import React, { ReactNode, useId } from 'react'
 import MainContent from '@/components/MainContent/MainContent'
 import SideBar from '@/components/SideBar/SideBar'
-import useWindowSize from '@/hooks/useWindowSize'
 import useMediaQuery from '@/hooks/useMediaQuery'
+import { createNewChat } from '@/store/slices/chatSlice/chatSlice'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '@/store/store'
+import { v4 } from 'uuid'
 
 interface IChatLayoutProps {
   children?: ReactNode
 }
 
 const ChatLayout = ({ children }: IChatLayoutProps) => {
-  const [point, setPoint] = useState<'sm' | 'normal'>('normal')
-
   const isSmall = useMediaQuery('(max-width: 640px)')
+  const dispatch = useDispatch<AppDispatch>()
 
   return (
     <MainContent>
@@ -25,7 +27,15 @@ const ChatLayout = ({ children }: IChatLayoutProps) => {
           width={isSmall ? 'md' : 'sm'}
           isSmall={isSmall}
         >
-          <span>items</span>
+          <button
+            className="w-full rounded-md bg-emerald-500 p-2 text-center"
+            onClick={() => {
+              dispatch(createNewChat({ id: v4(), messages: [], title: '' }))
+            }}
+          >
+            New chat +
+          </button>
+          <div className="overflow-auto">items</div>
         </SideBar>
       </div>
       {children}

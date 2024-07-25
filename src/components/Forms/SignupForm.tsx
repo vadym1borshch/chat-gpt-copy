@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/store/store'
 import {
   fetchUsersFromDB,
-  setCurrentUser,
+  setCurrentUserAction,
 } from '@/store/slices/usersSlice/usersSlice'
 import { usersSelector } from '@/store/slices/usersSlice/selectors/selectors'
 import { USER } from '@/common/vars'
@@ -40,7 +40,7 @@ export default function SignUp() {
     }
     if (user) {
       const curUser = { id: 1, email: user.email, name: user.email }
-      dispatch(setCurrentUser(curUser))
+      dispatch(setCurrentUserAction(curUser))
       localStorage.setItem(USER, JSON.stringify(curUser))
       return
     }
@@ -57,7 +57,7 @@ export default function SignUp() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.currentTarget.value)}
           required
         />
         <input
@@ -65,7 +65,7 @@ export default function SignUp() {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.currentTarget.value)}
           required
         />
       </form>

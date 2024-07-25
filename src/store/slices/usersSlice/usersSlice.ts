@@ -6,16 +6,20 @@ export interface ICurrentUser extends IUser {
   name?: string | null
 }
 
+export type ProvidersType = Record<string, any> | null
+
 export interface IInitialState {
   users: IUser[]
   currentUser: ICurrentUser | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  providers: ProvidersType
 }
 
 const initialState: IInitialState = {
   users: [],
   currentUser: null,
   status: 'idle',
+  providers: null
 }
 
 export const fetchUsersFromDB = createAsyncThunk(
@@ -35,11 +39,14 @@ const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setCurrentUser: (state: IInitialState, action: PayloadAction<ICurrentUser>) => {
+    setCurrentUserAction: (state: IInitialState, action: PayloadAction<ICurrentUser>) => {
       state.currentUser = action.payload
     },
-    deleteCurrentUser: (state: IInitialState) => {
+    deleteCurrentUserAction: (state: IInitialState) => {
       state.currentUser = null
+    },
+    setProvidersAction: (state: IInitialState, action: PayloadAction<ProvidersType>) => {
+      state.providers = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -61,6 +68,6 @@ const usersSlice = createSlice({
   },
 })
 
-export const { setCurrentUser, deleteCurrentUser } = usersSlice.actions
+export const { setCurrentUserAction, deleteCurrentUserAction, setProvidersAction } = usersSlice.actions
 
 export default usersSlice.reducer

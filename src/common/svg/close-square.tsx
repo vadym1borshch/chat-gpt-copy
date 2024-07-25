@@ -14,7 +14,6 @@ const CloseIcon: React.FC<ICloseIconProps> = ({
 }) => {
   const onClickHandler = () => {
     onClick && onClick()
-    console.log("click")
   }
   return (
     <svg

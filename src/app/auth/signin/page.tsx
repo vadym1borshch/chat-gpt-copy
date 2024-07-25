@@ -1,15 +1,16 @@
 'use client'
 
 import { signIn, useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/store/store'
-import { setCurrentUser } from '@/store/slices/usersSlice/usersSlice'
+import { setCurrentUserAction } from '@/store/slices/usersSlice/usersSlice'
 import { USER } from '@/common/vars'
+import { providersSelector } from '@/store/slices/usersSlice/selectors/selectors'
 
 const SignIn = () => {
-  const [providers, setProviders] = useState<Record<string, any> | null>(null)
+  const providers = useSelector(providersSelector)
   const { data: session, status } = useSession()
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
@@ -18,21 +19,12 @@ const SignIn = () => {
     signIn(id)
   }
 
-  useEffect(() => {
-    async function fetchProviders() {
-      const res = await fetch('/api/auth/providers')
-      const data = await res.json()
-      setProviders(data)
-    }
-
-    fetchProviders()
-  }, [])
 
   useEffect(() => {
     if (session?.user) {
       router.push('/chat')
       dispatch(
-        setCurrentUser({
+        setCurrentUserAction({
           id: 1,
           email: session!.user.email,
           name: session!.user.name,

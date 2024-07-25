@@ -98,7 +98,7 @@ const SideBar: React.FC<ISideBarProps> = ({
       <div
         className={`fixed ${fixedClass} top-0 ${side}-0 transform bg-gray-800 text-white ${transformClass} transition-transform duration-300 ease-in-out`}
       >
-        <div className="overflow-auto p-4">
+        <div className="p-4 flex flex-col gap-8">
           {children}
         </div>
       </div>
