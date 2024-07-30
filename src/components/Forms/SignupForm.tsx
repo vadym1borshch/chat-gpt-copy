@@ -10,6 +10,8 @@ import {
 } from '@/store/slices/usersSlice/usersSlice'
 import { usersSelector } from '@/store/slices/usersSlice/selectors/selectors'
 import { USER } from '@/common/vars'
+import { useRouter } from 'next/navigation'
+import { compare } from 'bcryptjs'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
@@ -17,6 +19,7 @@ export default function SignUp() {
   const [error, setError] = useState<string | null>(null)
   const dispatch = useDispatch<AppDispatch>()
   const users = useSelector(usersSelector)
+  const router = useRouter()
 
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -36,13 +39,29 @@ export default function SignUp() {
 
     if (!email || !password) {
       setError('please fill all fields')
+
       return
     }
     if (user) {
-      const curUser = { id: 1, email: user.email, name: user.email }
-      dispatch(setCurrentUserAction(curUser))
-      localStorage.setItem(USER, JSON.stringify(curUser))
-      return
+      const handleComparePassword = async () => {
+        try {
+          const match = await compare(password, user.password as string);
+          if (!match) {
+            setError("Passwords don't match")
+            return
+          }
+          console.log(user)
+          const curUser = { id: user.id, email: user.email, name: user.email }
+          dispatch(setCurrentUserAction(curUser))
+          localStorage.setItem(USER, JSON.stringify(curUser))
+          router.push("/chat")
+          return
+        } catch (err) {
+          console.error('Error comparing password:', err);
+        }
+      }
+      handleComparePassword()
+
     }
     if (!user) {
       setError('user does not exist, please register')

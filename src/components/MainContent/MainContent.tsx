@@ -7,7 +7,7 @@ interface IMainContentProps {
 
 const MainContent: React.FC<IMainContentProps> = ({ children }) => {
   return (
-    <main className="relative flex min-h-screen w-full ">
+    <main className="relative flex min-h-screen w-full">
       {children}
     </main>
   )

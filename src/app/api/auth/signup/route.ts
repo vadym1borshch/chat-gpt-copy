@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import sql from 'better-sqlite3'
-const db = sql('users.db')
+import api from '@/services/api'
+import { IUser } from '@/common/types'
+import { v4 } from 'uuid'
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
   // Перевірка чи користувач вже існує
-  const existingUser = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-  if (existingUser) {
+  const users = await api.get("/users") ;
+  const user = users.data.find((u: IUser) => u.email === email);
+  if (user) {
     return NextResponse.json({ error: 'User already exists' }, { status: 400 });
   }
 
@@ -16,8 +18,7 @@ export async function POST(req: Request) {
   const hashedPassword = await hash(password, 10);
 
   // Створення нового користувача
-  const stmt = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
-  const info = stmt.run(email, hashedPassword);
+ const newUser = api.post("/users", {id: v4(), email: email, password: hashedPassword});
 
-  return NextResponse.json({ id: info.lastInsertRowid, email });
+  return NextResponse.json(newUser);
 }

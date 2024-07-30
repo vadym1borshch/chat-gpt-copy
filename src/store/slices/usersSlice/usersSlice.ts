@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { IUser } from '@/app/api/users/route'
+import api from '@/services/api'
+import { IUser } from '@/common/types'
 
 export interface ICurrentUser extends IUser {
   name?: string | null
@@ -27,7 +28,7 @@ export const fetchUsersFromDB = createAsyncThunk(
   // Declare the type your function argument here:
   async () => {
     try {
-      const users = await axios.get('/api/users')
+      const users = await api.get('/users');
       return users.data
     } catch (error) {
       console.error('Failed to fetch users:', error)

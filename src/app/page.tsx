@@ -13,17 +13,38 @@ import {
 import { currentUsersSelector } from '@/store/slices/usersSlice/selectors/selectors'
 import { useRouter } from 'next/navigation'
 import { USER } from '@/common/vars'
+import { useSession } from 'next-auth/react'
+import axios from 'axios'
+import { fetchChats } from '@/store/slices/chatSlice/chatSlice'
 
 const Home = () => {
   const user = useSelector(currentUsersSelector)
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
+  const { data: session, status } = useSession()
+
 
 
   useEffect(() => {
-    async function fetchProviders() {
-      const res = await fetch('/api/auth/providers')
-      const data = await res.json()
+    dispatch(fetchUsersFromDB())
+  }, [])
+
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchChats(user.email as string))
+    }
+
+  }, [user])
+
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      const res = await axios.get('/api/auth/providers')
+      if (!res) {
+        throw new Error('Failed to fetch providers')
+      }
+      const data = await res.data
       dispatch(setProvidersAction(data))
     }
 
@@ -34,26 +55,17 @@ const Home = () => {
     const storageUser = localStorage.getItem(USER)
     if (storageUser) {
       dispatch(setCurrentUserAction(JSON.parse(storageUser) as ICurrentUser))
-    }
-  }, [dispatch])
-
-  useEffect(() => {
-    dispatch(fetchUsersFromDB())
-  }, [])
-
-  useEffect(() => {
-    if (!!user) {
       router.push('/chat')
     }
-  }, [user, router])
+  }, [])
 
- /* if (status === 'loading') {
+  if (status === 'loading') {
     return (
       <div className="flex min-h-screen w-full items-center justify-center text-[48px] font-bold italic">
         LOADING.....
       </div>
     )
-  }*/
+  }
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-8">

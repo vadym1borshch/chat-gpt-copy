@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "json-server": "json-server --watch server.json --port 9001"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.6",
@@ -15,7 +16,7 @@
     "@types/next-auth": "^3.15.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.1.2",
+    "json-server": "^1.0.0-beta.1",
     "next": "14.2.5",
     "next-auth": "^4.24.7",
     "openai": "^4.53.0",
@@ -26,7 +27,6 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2",
-    "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
