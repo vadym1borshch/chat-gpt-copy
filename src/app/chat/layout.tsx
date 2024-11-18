@@ -1,5 +1,5 @@
 'use client'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useState } from 'react'
 import MainContent from '@/components/MainContent/MainContent'
 import SideBar from '@/components/SideBar/SideBar'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -11,6 +11,7 @@ interface IChatLayoutProps {
 
 const ChatLayout = ({ children }: IChatLayoutProps) => {
   const isSmall = useMediaQuery('(max-width: 640px)')
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <MainContent>
@@ -20,10 +21,12 @@ const ChatLayout = ({ children }: IChatLayoutProps) => {
         <SideBar
           side="left"
           height="full"
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
           width={isSmall ? 'md' : 'sm'}
           isSmall={isSmall}
         >
-          <Dialogs />
+          <Dialogs setIsOpen={setIsOpen} isSmall={isSmall}/>
         </SideBar>
       </div>
       {children}

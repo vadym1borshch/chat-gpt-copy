@@ -2,70 +2,39 @@
 
 import { useState } from 'react'
 import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/store/store'
-import {
-  fetchUsersFromDB,
-  setCurrentUserAction,
-} from '@/store/slices/usersSlice/usersSlice'
-import { usersSelector } from '@/store/slices/usersSlice/selectors/selectors'
-import { USER } from '@/common/vars'
-import { useRouter } from 'next/navigation'
-import { compare } from 'bcryptjs'
+import { useDispatch } from 'react-redux'
+import { setCurrentUserAction } from '@/store/slices/usersSlice/usersSlice'
+import SignIn from '@/app/auth/signin/page'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const dispatch = useDispatch<AppDispatch>()
-  const users = useSelector(usersSelector)
-  const router = useRouter()
 
   const handleSubmit = async () => {
-    if (!email || !password) {
-      setError('please fill all fields')
-      return
-    }
     try {
-      const res = await axios.post('/api/auth/signup', { email, password })
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'An error occurred')
+      const res = await axios.get(`api/users?email=${email}`)
+      dispatch(setCurrentUserAction(res.data))
+
+    } catch (error: any) {
+      setError(error.response.data.error)
     }
-    dispatch(fetchUsersFromDB())
   }
 
-  const signInHandler = () => {
-    const user = users.find((u) => u.email === email)
-
+  const signInHandler = async () => {
     if (!email || !password) {
       setError('please fill all fields')
-
       return
     }
-    if (user) {
-      const handleComparePassword = async () => {
-        try {
-          const match = await compare(password, user.password as string);
-          if (!match) {
-            setError("Passwords don't match")
-            return
-          }
-          console.log(user)
-          const curUser = { id: user.id, email: user.email, name: user.email }
-          dispatch(setCurrentUserAction(curUser))
-          localStorage.setItem(USER, JSON.stringify(curUser))
-          router.push("/chat")
-          return
-        } catch (err) {
-          console.error('Error comparing password:', err);
-        }
-      }
-      handleComparePassword()
 
+    const res = await axios.post('api/users', { email, password })
+    if (res.data.error) {
+      setError(res.data.error)
+      return
     }
-    if (!user) {
-      setError('user does not exist, please register')
-    }
+    dispatch(setCurrentUserAction(res.data))
   }
 
   return (

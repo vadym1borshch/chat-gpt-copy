@@ -1,15 +1,25 @@
 'use client'
 
-import { signIn, useSession } from 'next-auth/react'
+import { getProviders, signIn, useSession } from 'next-auth/react'
 import { useSelector } from 'react-redux'
 import { USER } from '@/common/vars'
 import { providersSelector } from '@/store/slices/usersSlice/selectors/selectors'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 
 const SignIn = () => {
   const providers = useSelector(providersSelector)
   const { data: session, status } = useSession()
 
+
+  useEffect(() => {
+    const pr = async  () => {
+      const p = await axios.get('api/auth/providers')
+      console.log(p)
+    }
+    pr()
+  }, [])
   const signInHandler = (id: any) => {
     signIn(id)
     if (session?.user) {

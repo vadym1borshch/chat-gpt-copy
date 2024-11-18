@@ -1,40 +1,35 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import api from '@/services/api'
+import axios from 'axios'
 
 export type MessageType = {
   id: string
-  message: string
+  answer: string
   prompt: string
 }
 
 export type ChatType = {
   id: string
-  messages: MessageType[]
+  conversations: MessageType[]
   title: string
 }
 
 export interface IChatSlice {
   chats: ChatType[]
-  currentChatId: string
+  currentChatId: string | null
 }
 
 const initialState: IChatSlice = {
   chats: [],
-  currentChatId: '',
+  currentChatId: null,
 }
-
 
 export const fetchChats = createAsyncThunk(
   'chats',
-  // Declare the type your function argument here:
-  async (email: string) => {
+  async (params: { userId: string; chatId?: string | null }, { dispatch }) => {
+    const { userId, chatId } = params
     try {
-      const chats = await api.get('/conversations')
-      const userChats = chats.data.find((chat:any) => chat.email === email)
-      if (userChats) {
-        return userChats.chats
-      }
-     return []
+      const res = await axios.get(`/api/conversations?id=${userId}`)
+      return { chats: res.data, chatId }
     } catch (error) {
       console.error('Failed to fetch chats:', error)
     }
@@ -45,40 +40,11 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    createNewChat: (state: IChatSlice, action: PayloadAction<ChatType>) => {
-      state.chats = [action.payload, ...state.chats]
+    setCurrentChatId: (state, action: PayloadAction<{ id: string }>) => {
       state.currentChatId = action.payload.id
     },
-    setCurrentChatId: (
-      state: IChatSlice,
-      action: PayloadAction<{ id: string }>
-    ) => {
-      state.currentChatId = action.payload.id
-    },
-    addMessageAction: (
-      state: IChatSlice,
-      action: PayloadAction<{ id?: string; message: MessageType }>
-    ) => {
-      state.chats = state.chats.map((chat) => {
-        if (chat.id === action.payload.id) {
-          return {
-            ...chat,
-            messages: [...chat.messages, action.payload.message],
-            title:
-              chat.title === 'new chat'
-                ? action.payload.message.prompt
-                : chat.title,
-          }
-        }
-
-        return chat
-      })
-    },
-    deleteChatAction: (
-      state: IChatSlice,
-      action: PayloadAction<{ id: string }>
-    ) => {
-      state.chats = state.chats.filter((chat) => chat.id !== action.payload.id)
+    resetCurrentChatId: (state) => {
+      state.currentChatId = null
     },
   },
   extraReducers: (builder) => {
@@ -88,9 +54,29 @@ const chatSlice = createSlice({
       })*/
       .addCase(
         fetchChats.fulfilled,
-        (state, action: PayloadAction<ChatType[]>) => {
+        (
+          state,
+          action: PayloadAction<
+            { chats: ChatType[]; chatId: string | null | undefined } | undefined
+          >
+        ) => {
           // state.status = 'succeeded';
-          state.chats = action.payload
+          if (action.payload) {
+            const chats = action.payload.chats
+            state.chats = chats
+            if (action.payload.chats.length === 1) {
+              state.currentChatId = chats[0].id
+              return
+            }
+            if (chats.length > 1) {
+              if (action.payload.chatId) {
+                state.currentChatId = action.payload.chatId
+                return
+              }
+              state.currentChatId = chats[chats.length - 1].id
+            }
+          }
+
         }
       )
     /*  .addCase(fetchUsersFromDB.rejected, (state, action) => {
@@ -100,11 +86,6 @@ const chatSlice = createSlice({
   },
 })
 
-export const {
-  addMessageAction,
-  setCurrentChatId,
-  createNewChat,
-  deleteChatAction,
-} = chatSlice.actions
+export const { setCurrentChatId, resetCurrentChatId } = chatSlice.actions
 
 export default chatSlice.reducer

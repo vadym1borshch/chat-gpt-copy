@@ -11,8 +11,8 @@
     "json-server": "json-server --watch server.json --port 9001"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.2.6",
-    "@types/axios": "^0.14.0",
+    "@next-auth/prisma-adapter": "^1.0.7",
+    "@prisma/client": "^5.20.0",
     "@types/next-auth": "^3.15.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
@@ -20,10 +20,16 @@
     "next": "14.2.5",
     "next-auth": "^4.24.7",
     "openai": "^4.53.0",
+    "prisma": "^5.22.0",
     "react": "^18",
     "react-dom": "^18",
     "react-redux": "^9.1.2",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8",
+    "@reduxjs/toolkit": "^2.2.7",
+    "@types/axios": "^0.14.0",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2",
@@ -38,6 +44,5 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  },
-  "packageManager": "yarn@4.3.1+sha512.af78262d7d125afbfeed740602ace8c5e4405cd7f4735c08feb327286b2fdb2390fbca01589bfd1f50b1240548b74806767f5a063c94b67e431aabd0d86f7774"
+  }
 }

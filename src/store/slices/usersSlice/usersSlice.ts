@@ -1,74 +1,37 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
-import api from '@/services/api'
-import { IUser } from '@/common/types'
-
-export interface ICurrentUser extends IUser {
-  name?: string | null
-}
-
-export type ProvidersType = Record<string, any> | null
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { User } from '@prisma/client'
 
 export interface IInitialState {
-  users: IUser[]
-  currentUser: ICurrentUser | null
+  currentUser: User | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
-  providers: ProvidersType
+
 }
 
 const initialState: IInitialState = {
-  users: [],
   currentUser: null,
   status: 'idle',
-  providers: null
 }
-
-export const fetchUsersFromDB = createAsyncThunk(
-  'users',
-  // Declare the type your function argument here:
-  async () => {
-    try {
-      const users = await api.get('/users');
-      return users.data
-    } catch (error) {
-      console.error('Failed to fetch users:', error)
-    }
-  }
-)
 
 const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setCurrentUserAction: (state: IInitialState, action: PayloadAction<ICurrentUser>) => {
+    setCurrentUserAction: (
+      state: IInitialState,
+      action: PayloadAction<User>
+    ) => {
       state.currentUser = action.payload
     },
     deleteCurrentUserAction: (state: IInitialState) => {
       state.currentUser = null
     },
-    setProvidersAction: (state: IInitialState, action: PayloadAction<ProvidersType>) => {
-      state.providers = action.payload
-    }
-  },
-  extraReducers: (builder) => {
-    builder
-      /*.addCase(fetchUsersFromDB.pending, (state) => {
-        state.status = 'loading';
-      })*/
-      .addCase(
-        fetchUsersFromDB.fulfilled,
-        (state, action: PayloadAction<IUser[]>) => {
-          // state.status = 'succeeded';
-          state.users = action.payload
-        }
-      )
-    /*  .addCase(fetchUsersFromDB.rejected, (state, action) => {
-        state.status = 'failed';
-        //state.error = action.error.message ?? 'Не вдалося отримати користувачів';
-      });*/
+
   },
 })
 
-export const { setCurrentUserAction, deleteCurrentUserAction, setProvidersAction } = usersSlice.actions
+export const {
+  setCurrentUserAction,
+  deleteCurrentUserAction,
+} = usersSlice.actions
 
 export default usersSlice.reducer

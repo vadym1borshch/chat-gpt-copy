@@ -8,10 +8,12 @@ interface IAnswersProps {
 const Answers: React.FC<IAnswersProps> = ({ prompt, message }) => {
   return (
     <>
-      <div className="flex justify-end rounded bg-yellow-100 p-1 text-gray-800">
-        {prompt}
-      </div>
-      <div className="rounded bg-blue-100 p-1 text-gray-800">{message}</div>
+      {prompt && (
+        <div className="flex justify-end rounded bg-yellow-100 p-1 text-gray-800">
+          {prompt}
+        </div>
+      )}
+      {message && <div className="rounded bg-blue-100 p-1 text-gray-800">{message}</div>}
     </>
   )
 }

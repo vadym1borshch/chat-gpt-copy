@@ -1,41 +1,40 @@
 'use client'
-import React, { ReactNode, useEffect, useMemo, useState } from 'react'
+import React, { ReactNode, useEffect, useState, useRef } from 'react'
 import MenuIcon from '@/common/svg/menu-dots'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 interface ISideBarProps {
   side?: 'left' | 'right' | 'bottom' | 'top'
   width?: 'full' | 'sm' | 'md'
   height?: 'full' | 'sm' | 'md'
-  callback?: (open: boolean) => void
   isSmall?: boolean
   children: ReactNode
+  isOpen: boolean
+  setIsOpen?: (value: boolean) => void
+  setIsOpenCallback?: (value: boolean) => void
 }
 
 const SideBar: React.FC<ISideBarProps> = ({
   side = 'left',
   width,
-  callback,
   height,
   isSmall,
   children,
+  isOpen,
+  setIsOpen,
+  setIsOpenCallback,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
 
-  const toggleHandler = useMemo(() => {
-    if (isSmall === undefined) {
-      return () => {
-        setIsOpen(!isOpen)
-        callback && callback(isOpen)
-      }
+  const closeHandler = () => {
+    if (isSmall) {
+      setIsOpen && setIsOpen(false)
+      return
     }
-    return () => {
-      if (!isSmall) {
-        return
-      }
-      setIsOpen(!isOpen)
-      callback && callback(isOpen)
-    }
-  }, [callback, isOpen, isSmall])
+    setIsOpenCallback && setIsOpenCallback(false)
+  }
+
+  useOutsideClick(ref, closeHandler)
 
   const h =
     height === 'full'
@@ -81,25 +80,34 @@ const SideBar: React.FC<ISideBarProps> = ({
   useEffect(() => {
     if (isSmall !== undefined) {
       if (!isSmall) {
-        setIsOpen(true)
+        setIsOpen && setIsOpen(true)
       }
       if (isSmall) {
-        setIsOpen(false)
+        setIsOpen && setIsOpen(false)
       }
     }
-  }, [isSmall])
+  }, [isSmall, setIsOpen])
+
   return (
     <div
-      className={`${isSmall ? 'absolute' : 'relative' } z-10 overflow-auto`}
-      onBlur={toggleHandler}
+      ref={ref}
+      className={`${isSmall ? 'absolute' : 'relative'} z-10 overflow-auto`}
     >
-      <button onClick={toggleHandler}>
+      <button
+        onClick={(e) => {
+          if (isSmall) {
+            setIsOpen && setIsOpen(true)
+            return
+          }
+          setIsOpenCallback && setIsOpenCallback(true)
+        }}
+      >
         <MenuIcon />
       </button>
       <div
-        className={`fixed ${fixedClass} top-0 ${side}-0 transform bg-gray-800 text-white ${transformClass} transition-transform duration-300 ease-in-out `}
+        className={`fixed ${fixedClass} top-0 ${side}-0 transform bg-gray-800 text-white ${transformClass} transition-transform duration-300 ease-in-out`}
       >
-        <div className="flex flex-col gap-8 p-4 overflow-auto ">{children}</div>
+        <div className="flex flex-col gap-8 overflow-auto p-4">{children}</div>
       </div>
     </div>
   )
